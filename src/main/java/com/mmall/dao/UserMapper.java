@@ -2,7 +2,6 @@ package com.mmall.dao;
 
 import com.mmall.pojo.User;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.bind.annotation.PathVariable;
 
 public interface UserMapper {
     int deleteByPrimaryKey(Integer id);
@@ -17,12 +16,19 @@ public interface UserMapper {
 
     int updateByPrimaryKey(User record);
 
-    /**
-     * 校验姓名，返回数据库中有多少个姓名=username的数据
-     * @param username
-     * @return
-     */
-    int checkUsername(String username);
+    int checkUsername(@Param("username") String username);
+
+    int checkEmail(String email);
 
     User selectLogin(@Param("username") String username, @Param("password") String password);
+
+    String selectQuestionByUsername(String username);
+
+    int checkAnswer(@Param("username") String username, @Param("question") String question, @Param("answer") String answer);
+
+    int updatePasswordByUsername(@Param("username") String username, @Param("passwordNew") String passwordNew);
+
+    int checkPassword(@Param(value = "password") String password, @Param("userId") Integer userId);
+
+    int checkEmailByUserId(@Param(value = "email") String email, @Param(value = "userId") Integer userId);
 }
