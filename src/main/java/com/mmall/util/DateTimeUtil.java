@@ -8,7 +8,9 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
- * Created by geely
+ * 时间转换类：
+ *          1. 时间-->字符串
+ *          2. 字符串-->时间
  */
 public class DateTimeUtil {
 
@@ -19,13 +21,24 @@ public class DateTimeUtil {
     public static final String STANDARD_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 
-
+    /**
+     * 字符串-->时间
+     * @param dateTimeStr 需要转换的字符串
+     * @param formatStr 目标格式
+     * @return
+     */
     public static Date strToDate(String dateTimeStr,String formatStr){
         DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern(formatStr);
         DateTime dateTime = dateTimeFormatter.parseDateTime(dateTimeStr);
         return dateTime.toDate();
     }
 
+    /**
+     * 时间-->字符串
+     * @param date 需要转换的日期
+     * @param formatStr 目标格式
+     * @return
+     */
     public static String dateToStr(Date date,String formatStr){
         if(date == null){
             return StringUtils.EMPTY;
@@ -34,6 +47,11 @@ public class DateTimeUtil {
         return dateTime.toString(formatStr);
     }
 
+    /**
+     * 使用默认根式转换
+     * @param dateTimeStr
+     * @return
+     */
     public static Date strToDate(String dateTimeStr){
         DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern(STANDARD_FORMAT);
         DateTime dateTime = dateTimeFormatter.parseDateTime(dateTimeStr);

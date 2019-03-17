@@ -26,26 +26,44 @@ public class FTPUtil {
         this.user = user;
         this.pwd = pwd;
     }
+
+    /**
+     * 上传文件
+     * @param fileList  要上传的文件列表
+     * @return  是否上传成功
+     * @throws IOException
+     */
     public static boolean uploadFile(List<File> fileList) throws IOException {
         FTPUtil ftpUtil = new FTPUtil(ftpIp,21,ftpUser,ftpPass);
         logger.info("开始连接ftp服务器");
-        boolean result = ftpUtil.uploadFile("img",fileList);
+        boolean result = ftpUtil.uploadFile("images",fileList);
         logger.info("开始连接ftp服务器,结束上传,上传结果:{}");
         return result;
     }
 
-
+    /**
+     *
+     * @param remotePath 服务器上的路径
+     * @param fileList  需要上传的文件列表
+     * @return
+     * @throws IOException
+     */
     private boolean uploadFile(String remotePath,List<File> fileList) throws IOException {
         boolean uploaded = true;
         FileInputStream fis = null;
         //连接FTP服务器
         if(connectServer(this.ip,this.port,this.user,this.pwd)){
             try {
+                // 切换目录
                 ftpClient.changeWorkingDirectory(remotePath);
                 ftpClient.setBufferSize(1024);
                 ftpClient.setControlEncoding("UTF-8");
+                // 防止乱码问题
                 ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
+                // 打开本地的备份模式
                 ftpClient.enterLocalPassiveMode();
+
+                // 遍历文件列表，上传每一个文件
                 for(File fileItem : fileList){
                     fis = new FileInputStream(fileItem);
                     ftpClient.storeFile(fileItem.getName(),fis);
@@ -56,7 +74,9 @@ public class FTPUtil {
                 uploaded = false;
                 e.printStackTrace();
             } finally {
+                // 关闭流
                 fis.close();
+                // 释放文件资源
                 ftpClient.disconnect();
             }
         }
@@ -64,7 +84,14 @@ public class FTPUtil {
     }
 
 
-
+    /**
+     * 连接服务器
+     * @param ip
+     * @param port
+     * @param user
+     * @param pwd
+     * @return
+     */
     private boolean connectServer(String ip,int port,String user,String pwd){
 
         boolean isSuccess = false;
