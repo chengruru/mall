@@ -495,6 +495,8 @@ public class OrderServiceImpl implements IOrderService {
 
                 // 生成的二维码名称
                 String qrFileName = String.format("qr-%s.png",response.getOutTradeNo());
+
+                // qrPath : 路径+文件名
                 ZxingUtils.getQRCodeImge(response.getQrCode(), 256, qrPath);
 
                 // path：目标文件的path

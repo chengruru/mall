@@ -1,7 +1,6 @@
 package com.mmall.pojo;
 
 import java.util.Date;
-import java.util.Objects;
 
 public class Category {
     private Integer id;
@@ -88,17 +87,20 @@ public class Category {
         this.updateTime = updateTime;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Category category = (Category) o;
-        return Objects.equals(id, category.id);
+
+        return !(id != null ? !id.equals(category.id) : category.id != null);
+
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id);
+        return id != null ? id.hashCode() : 0;
     }
 }
