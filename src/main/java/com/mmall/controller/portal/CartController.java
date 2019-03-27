@@ -24,7 +24,11 @@ public class CartController {
     private ICartService iCartService;
 
 
-
+    /**
+     * 购物车List列表
+     * @param session
+     * @return
+     */
     @RequestMapping("list.do")
     @ResponseBody
     public ServerResponse<CartVo> list(HttpSession session){
@@ -47,6 +51,8 @@ public class CartController {
 
 
 
+
+
     @RequestMapping("update.do")
     @ResponseBody
     public ServerResponse<CartVo> update(HttpSession session, Integer count, Integer productId){
@@ -57,6 +63,12 @@ public class CartController {
         return iCartService.update(user.getId(),productId,count);
     }
 
+    /**
+     * 删除购物车商品
+     * @param session
+     * @param productIds 和前端约定，可能同时删除多个商品，用逗号分割
+     * @return 返回购物车vo对象
+     */
     @RequestMapping("delete_product.do")
     @ResponseBody
     public ServerResponse<CartVo> deleteProduct(HttpSession session,String productIds){

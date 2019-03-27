@@ -57,7 +57,6 @@ public class ProductServiceImpl implements IProductService {
                     product.setMainImage(subImageArray[0]);
                 }
             }
-
             // 是更新操作，若是更新id一定会传过来
             if(product.getId() != null){
                 int rowCount = productMapper.updateByPrimaryKey(product);
@@ -101,7 +100,11 @@ public class ProductServiceImpl implements IProductService {
         return ServerResponse.createByErrorMessage("修改产品销售状态失败");
     }
 
-
+    /**
+     * 获取商品详情
+     * @param productId
+     * @return
+     */
     public ServerResponse<ProductDetailVo> manageProductDetail(Integer productId){
         // 参数校验
         if(productId == null){
@@ -164,7 +167,10 @@ public class ProductServiceImpl implements IProductService {
         //          2.填充自己的sql查询逻辑
         //          3.pageHelper-收尾
         PageHelper.startPage(pageNum,pageSize);
+
+        // 后台管理，获取所有的商品列表
         List<Product> productList = productMapper.selectList();
+
         // list不需要商品那么详细的信息，需要抽取信息，进行封装
         List<ProductListVo> productListVoList = Lists.newArrayList();
         for(Product productItem : productList){
@@ -173,7 +179,7 @@ public class ProductServiceImpl implements IProductService {
         }
 
         // pageHelper-收尾，直接对传入的集合进行分页处理
-        // 参数productList：利用它进行分页，但实际上当回的数据不是它
+        // 参数productList：利用它进行分页，但实际上返回的数据不是它
         PageInfo pageResult = new PageInfo(productList);
 
         // 填充实际的数据,重置productList
@@ -202,17 +208,19 @@ public class ProductServiceImpl implements IProductService {
 
     /**
      * 搜索商品
-     * @param productName
-     * @param productId
-     * @param pageNum
-     * @param pageSize
+     * @param productName 商品名称
+     * @param productId 商品id
+     * @param pageNum 开始页码
+     * @param pageSize 每一页的大小
      * @return
      */
     public ServerResponse<PageInfo> searchProduct(String productName,Integer productId,int pageNum,int pageSize){
         PageHelper.startPage(pageNum,pageSize);
         if(StringUtils.isNotBlank(productName)){
+            // 对商品名称进行模糊查询
             productName = new StringBuilder().append("%").append(productName).append("%").toString();
         }
+        // 此处不需要过滤下架的商品（管理员），用户查询的时候需要进行过滤
         List<Product> productList = productMapper.selectByNameAndProductId(productName,productId);
         List<ProductListVo> productListVoList = Lists.newArrayList();
         for(Product productItem : productList){
@@ -251,12 +259,14 @@ public class ProductServiceImpl implements IProductService {
 
 
     public ServerResponse<PageInfo> getProductByKeywordCategory(String keyword,Integer categoryId,int pageNum,int pageSize,String orderBy){
+        // 没有关键字、分类id也没有，则返回参数错误
         if(StringUtils.isBlank(keyword) && categoryId == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),ResponseCode.ILLEGAL_ARGUMENT.getDesc());
         }
         List<Integer> categoryIdList = new ArrayList<Integer>();
 
         if(categoryId != null){
+            // 根据categoryId查询结果，并将所有的子分类放入到结果集中
             Category category = categoryMapper.selectByPrimaryKey(categoryId);
             if(category == null && StringUtils.isBlank(keyword)){
                 //没有该分类,并且还没有关键字,这个时候返回一个空的结果集,不报错
@@ -268,6 +278,7 @@ public class ProductServiceImpl implements IProductService {
             // 将当前分类下的所有子分类的递归结果，放入到结果集中
             categoryIdList = iCategoryService.selectCategoryAndChildrenById(category.getId()).getData();
         }
+        // 根据关键字模糊查询
         if(StringUtils.isNotBlank(keyword)){
             keyword = new StringBuilder().append("%").append(keyword).append("%").toString();
         }

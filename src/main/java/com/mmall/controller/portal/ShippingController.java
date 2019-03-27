@@ -55,7 +55,7 @@ public class ShippingController {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
         }
         return iShippingService.del(user.getId(),shippingId);
-    }
+}
 
     /**
      * 更新收获地址
@@ -70,6 +70,7 @@ public class ShippingController {
         if(user ==null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
         }
+        // 使用userId是为了防止横向越权问题
         return iShippingService.update(user.getId(),shipping);
     }
 
@@ -86,6 +87,7 @@ public class ShippingController {
         if(user ==null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
         }
+        // 同样也要做横向越权处理
         return iShippingService.select(user.getId(),shippingId);
     }
 

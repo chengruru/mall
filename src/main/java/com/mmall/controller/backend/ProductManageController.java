@@ -169,6 +169,8 @@ public class ProductManageController {
     @RequestMapping("upload.do")
     @ResponseBody
     public ServerResponse upload(HttpSession session,@RequestParam(value = "upload_file",required = false) MultipartFile file,HttpServletRequest request){
+
+        // 校验用户管理员的身份，防止恶意上传超大文件，造成服务器崩溃
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),"用户未登录,请登录管理员");
@@ -176,6 +178,8 @@ public class ProductManageController {
         if(iUserService.checkAdminRole(user).isSuccess()){
             // 在webapp/upload
             String path = request.getSession().getServletContext().getRealPath("upload");
+
+            // 上传文件，并返回ftp上的文件名
             String targetFileName = iFileService.upload(file,path);
             String url = PropertiesUtil.getProperty("ftp.server.http.prefix")+targetFileName;
 
@@ -188,10 +192,18 @@ public class ProductManageController {
         }
     }
 
-
+    /**
+     * 富文本上传图片
+     * @param session
+     * @param file
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping("richtext_img_upload.do")
     @ResponseBody
     public Map richtextImgUpload(HttpSession session, @RequestParam(value = "upload_file",required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response){
+        // 用于存储返回值
         Map resultMap = Maps.newHashMap();
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user == null){

@@ -28,23 +28,29 @@ public class FileServiceImpl implements IFileService {
      * @return  上传文件名
      */
     public String upload(MultipartFile file,String path){
-        // 获取上传文件的原始文件名
+
+        // 1. 将本地文件上传到tomcat服务器
+        // 2. 将tomcat服务器上的文件上传到ftp服务器上
+        // 3. 删除tomcat服务器下的上传文件
+        // 4. 返回最终上传到服务器的文件名
+        // 5. 返回上传文件的原始文件名
         String fileName = file.getOriginalFilename();
         //扩展名
-        //abc.jpg
+        //abc.jpg  --> jpg
         String fileExtensionName = fileName.substring(fileName.lastIndexOf(".")+1); // jpg
 
         // 防止文件名相同被覆盖
-       String uploadFileName = UUID.randomUUID().toString()+"."+fileExtensionName;
+        String uploadFileName = UUID.randomUUID().toString()+"."+fileExtensionName;
         logger.info("开始上传文件,上传文件的文件名:{},上传的路径:{},新文件名:{}",fileName,path,uploadFileName);
 
         // 所需要上传的服务器目录文件路径若是不存在，则直接在服务器上创建
         File fileDir = new File(path);
-        if(!fileDir.exists()){  // 若不存在就创建
-            fileDir.setWritable(true);
-            fileDir.mkdirs();
+        if(!fileDir.exists()){  // 若不存在就创建,webapp/upload
+            fileDir.setWritable(true);  // 设置写权限
+            fileDir.mkdirs();   // 创建文件夹
         }
-        // 完整的文件名
+        // 完整的文件名，在tomcat服务器上，上传到ftp服务器之后要删除
+        // upload/上传文件
         File targetFile = new File(path,uploadFileName);
 
 

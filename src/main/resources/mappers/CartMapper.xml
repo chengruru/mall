@@ -165,6 +165,7 @@
 
 
   <select id="selectCartProductCount" parameterType="int" resultType="int">
+-- sum(quantity)有可能是null,返回值是int,无法进行接收
     select IFNULL(sum(quantity),0) as count from mmall_cart where user_id = #{userId}
   </select>
 

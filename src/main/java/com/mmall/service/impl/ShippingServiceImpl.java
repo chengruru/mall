@@ -50,6 +50,7 @@ public class ShippingServiceImpl implements IShippingService {
      * @return
      */
     public ServerResponse<String> del(Integer userId,Integer shippingId){
+        // 防止横向越权的问题，因而在删除的时候要结合用户id
         int resultCount = shippingMapper.deleteByShippingIdUserId(userId,shippingId);
         if(resultCount > 0){
             return ServerResponse.createBySuccess("删除地址成功");
@@ -74,10 +75,12 @@ public class ShippingServiceImpl implements IShippingService {
     }
 
     public ServerResponse<Shipping> select(Integer userId, Integer shippingId){
+        // 横向越权判断
         Shipping shipping = shippingMapper.selectByShippingIdUserId(userId,shippingId);
         if(shipping == null){
             return ServerResponse.createByErrorMessage("无法查询到该地址");
         }
+        // 将查询到的地址返回给前端
         return ServerResponse.createBySuccess("更新地址成功",shipping);
     }
 

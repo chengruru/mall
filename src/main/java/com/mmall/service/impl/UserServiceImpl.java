@@ -24,14 +24,18 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ServerResponse<User> login(String username, String password) {
-        System.out.println("username : " + username);
+
+        // 1.校验用户名是否存在
         int resultCount = userMapper.checkUsername(username);
-        System.out.println("resultCount--------------------------------" + resultCount);
+
         if(resultCount == 0 ){
             return ServerResponse.createByErrorMessage("用户名不存在");
         }
 
+        // 2.密码使用MD5加密
         String md5Password = MD5Util.MD5EncodeUtf8(password);
+
+        // 3.校验用户名和密码是否匹配，成功则将用户返回，便于获取用户信息
         User user  = userMapper.selectLogin(username,md5Password);
         if(user == null){
             return ServerResponse.createByErrorMessage("密码错误");
@@ -84,16 +88,19 @@ public class UserServiceImpl implements IUserService {
     }
 
     public ServerResponse selectQuestion(String username){
-
+        // 1.校验用户名是否存在
         ServerResponse validResponse = this.checkValid(username,Const.USERNAME);
         if(validResponse.isSuccess()){
             //用户不存在
             return ServerResponse.createByErrorMessage("用户不存在");
         }
+        // 获取找回密码的问题
         String question = userMapper.selectQuestionByUsername(username);
         if(org.apache.commons.lang3.StringUtils.isNotBlank(question)){
+            // 若问题不为空，返回找回密码的问题
             return ServerResponse.createBySuccess(question);
         }
+        // 未设置找回密码的问题
         return ServerResponse.createByErrorMessage("找回密码的问题是空的");
     }
 
@@ -101,7 +108,10 @@ public class UserServiceImpl implements IUserService {
         int resultCount = userMapper.checkAnswer(username,question,answer);
         if(resultCount>0){
             //说明问题及问题答案是这个用户的,并且是正确的
-            String forgetToken = UUID.randomUUID().toString();
+            String forgetToken = UUID.randomUUID().toString();  // 不会重复的字符串
+
+            // 将forgetToken放到本地cache中，并设置有效期
+            // 对问题的校验时间：设置有效时间
             TokenCache.setKey(TokenCache.TOKEN_PREFIX+username,forgetToken);
             return ServerResponse.createBySuccess(forgetToken);
         }
@@ -139,7 +149,8 @@ public class UserServiceImpl implements IUserService {
 
 
     public ServerResponse<String> resetPassword(String passwordOld,String passwordNew,User user){
-        //防止横向越权,要校验一下这个用户的旧密码,一定要指定是这个用户.因为我们会查询一个count(1),如果不指定id,那么结果就是true啦count>0;
+        // 防止横向越权,要校验一下这个用户的旧密码,一定要指定是这个用户.
+        // 因为我们会查询一个count(1),如果不指定id,那么结果就是true啦count>0;
         int resultCount = userMapper.checkPassword(MD5Util.MD5EncodeUtf8(passwordOld),user.getId());
         if(resultCount == 0){
             return ServerResponse.createByErrorMessage("旧密码错误");
@@ -182,6 +193,7 @@ public class UserServiceImpl implements IUserService {
         if(user == null){
             return ServerResponse.createByErrorMessage("找不到当前用户");
         }
+        // 置空密码
         user.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
         return ServerResponse.createBySuccess(user);
 

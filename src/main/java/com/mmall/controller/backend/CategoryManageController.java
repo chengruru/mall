@@ -28,14 +28,22 @@ public class CategoryManageController {
     @Autowired
     private ICategoryService iCategoryService;
 
+    /**
+     * 添加分类
+     * @param session
+     * @param categoryName
+     * @param parentId
+     * @return
+     */
     @RequestMapping("add_category.do")
     @ResponseBody
     public ServerResponse addCategory(HttpSession session,String categoryName,@RequestParam(value = "parentId",defaultValue = "0") int parentId){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
+        // 1.校验用户是否登陆
         if(user == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),"用户未登录,请登录");
         }
-        //校验一下是否是管理员
+        // 2.校验一下是否是管理员
         if(iUserService.checkAdminRole(user).isSuccess()){
             //是管理员
             //增加我们处理分类的逻辑

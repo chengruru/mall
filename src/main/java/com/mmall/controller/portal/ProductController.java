@@ -30,6 +30,7 @@ public class ProductController {
         return iProductService.getProductDetail(productId);
     }
 
+
     @RequestMapping("list.do")
     @ResponseBody
     public ServerResponse<PageInfo> list(@RequestParam(value = "keyword",required = false)String keyword,
