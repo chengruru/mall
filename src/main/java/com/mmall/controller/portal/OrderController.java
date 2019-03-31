@@ -51,7 +51,12 @@ public class OrderController {
         return iOrderService.createOrder(user.getId(),shippingId);
     }
 
-
+    /**
+     * 取消订单
+     * @param session
+     * @param orderNo 订单号
+     * @return
+     */
     @RequestMapping("cancel.do")
     @ResponseBody
     public ServerResponse cancel(HttpSession session, Long orderNo){
@@ -62,7 +67,11 @@ public class OrderController {
         return iOrderService.cancel(user.getId(),orderNo);
     }
 
-
+    /**
+     * 订单List，获取购物车中已经选中的商品
+     * @param session
+     * @return
+     */
     @RequestMapping("get_order_cart_product.do")
     @ResponseBody
     public ServerResponse getOrderCartProduct(HttpSession session){
@@ -74,7 +83,12 @@ public class OrderController {
     }
 
 
-
+    /**
+     * 订单详情detail
+     * @param session
+     * @param orderNo 订单编号
+     * @return
+     */
     @RequestMapping("detail.do")
     @ResponseBody
     public ServerResponse detail(HttpSession session,Long orderNo){

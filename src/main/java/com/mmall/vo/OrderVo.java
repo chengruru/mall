@@ -42,6 +42,11 @@ public class OrderVo {
 
     private ShippingVo shippingVo;
 
+
+
+
+
+
     public Long getOrderNo() {
         return orderNo;
     }
